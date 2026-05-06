@@ -1,0 +1,15 @@
+{
+  "name": "cairnlog",
+  "owner": {
+    "name": "CairnLog",
+    "email": "admin@cairnlog.com"
+  },
+  "description": "Cross-product AI memory and decision regulator. Skills, commands, hooks, and MCP integration for the cairnlog service at api.cairnlog.com.",
+  "plugins": [
+    {
+      "name": "cairnlog",
+      "source": "./",
+      "description": "External cross-product AI memory and decision regulator. 7 skills (index/memorize/gate/chat/task/cli/work-loop), 3 slash commands, 3 fail-soft hooks, and MCP server registration."
+    }
+  ]
+}
