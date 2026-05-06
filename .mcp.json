@@ -1,0 +1,6 @@
+{
+  "cairnlog": {
+    "type": "http",
+    "url": "https://api.cairnlog.com/mcp"
+  }
+}

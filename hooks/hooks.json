@@ -1,0 +1,38 @@
+{
+  "description": "CairnLog plugin hooks. UserPromptSubmit injects relevant memories; PreToolUse evaluates gates; Stop drives the work-loop and records auto-patterns. All hooks fail-soft (silent exit 0) when the cairnlog CLI is not installed or not authenticated.",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "# cairnlog-plugin",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/user-prompt-submit.sh"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "# cairnlog-plugin",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/pre-tool-use.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "# cairnlog-plugin",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

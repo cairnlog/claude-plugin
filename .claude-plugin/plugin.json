@@ -1,0 +1,12 @@
+{
+  "name": "cairnlog",
+  "version": "0.1.0",
+  "description": "External cross-product AI memory and decision regulator. Skills, commands, hooks, and MCP integration for the cairnlog service at api.cairnlog.com.",
+  "homepage": "https://cairnlog.com",
+  "repository": "https://github.com/cairnlog/claude-plugin",
+  "author": {
+    "name": "CairnLog",
+    "email": "admin@cairnlog.com",
+    "url": "https://cairnlog.com"
+  }
+}
