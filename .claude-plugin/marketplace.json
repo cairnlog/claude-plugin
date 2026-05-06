@@ -8,7 +8,10 @@
   "plugins": [
     {
       "name": "cairnlog",
-      "source": "./",
+      "source": {
+        "source": "github",
+        "repo": "cairnlog/claude-plugin"
+      },
       "description": "External cross-product AI memory and decision regulator. 7 skills (index/memorize/gate/chat/task/cli/work-loop), 3 slash commands, 3 fail-soft hooks, and MCP server registration."
     }
   ]
