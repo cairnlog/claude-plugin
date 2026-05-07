@@ -67,7 +67,7 @@ The Stop hook parses the last assistant message for `<work-loop-stopped>...</wor
 
 | Trigger | Sentinel content |
 | --- | --- |
-| `kind: "exhausted"`, `status: "all_awaiting_human_hard"` | `<work-loop-stopped>awaiting_human: <count> hard-blocked task(s) — <one-line summary of first 3 questions></work-loop-stopped>` |
+| `kind: "exhausted"`, `status: "all_awaiting_human_hard"` | `<work-loop-stopped>awaiting_human: <count> hard-blocked task(s) — <one-line summary of first 3 questions></work-loop-stopped>` (also fires for **phase quality gates** — see below) |
 | `kind: "exhausted"`, `status: "all_awaiting_human_soft_pending"` | `<work-loop-stopped>awaiting_human: all soft-blocked, soonest at <wait_until></work-loop-stopped>` |
 | `kind: "exhausted"`, `status: "stalled_in_progress"` | `<work-loop-stopped>stalled: <count> task(s) in_progress with no resolvable pending work</work-loop-stopped>` |
 | `kind: "exhausted"`, `status: "all_blocked"` | `<work-loop-stopped>deadlock: all tasks blocked</work-loop-stopped>` |
@@ -108,3 +108,23 @@ cairnlog tasks list --status awaiting_human --output human
 ```
 
 State file fields: `active`, `iteration`, `session_id`, `max_iterations`, `started_at`.
+
+## Phase quality gates
+
+When the queue contains tasks expanded from a [plan](../plan/SKILL.md), the loop pauses automatically at each **phase quality gate** — a synthetic task with `is_phase_gate: true`, `status: "awaiting_human"`, `blocking: "hard"`, and `depends_on` the just-completed phase's step ids.
+
+**What you'll see**: `tasks next` returns `kind: "exhausted"` with `status: "all_awaiting_human_hard"` once a phase's last step is done. The gate task is the only awaiting-hard task; remaining steps are pending-blocked-by-gate. Output the awaiting_human stop sentinel and stop. (See [`cairnlog:plan`](../plan/SKILL.md) for how the gate-task structure is laid out.)
+
+**To unblock**, the human (or an authorized agent) acks the gate by answering its question:
+
+```sh
+cairnlog tasks answer <gate-task-id> --answer "ack"
+```
+
+This flips the gate to `done`, unblocking the next phase's first step. Resume the loop with `/cairnlog:work-loop` (or it auto-resumes if the Stop hook is still active).
+
+**Don't try to bypass the gate** by editing the task or directly setting status. The gate exists so a human can verify the phase's quality criteria (lint/typecheck/tests/code-review) before the next phase begins. If the gate is wrong (e.g. the criterion is stale), the right move is to update the plan + re-expand, not to bypass.
+
+## Discovery → plan → execution
+
+The loop is the third leg of the lifecycle. See [`cairnlog:discover`](../discover/SKILL.md) for recording findings, [`cairnlog:plan`](../plan/SKILL.md) for composing structured plans, then this skill for running them.

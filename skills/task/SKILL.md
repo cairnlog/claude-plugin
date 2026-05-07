@@ -38,11 +38,26 @@ Tasks are **memories with `tags: ["task"]`** whose body starts with a YAML front
 | `wait_until` | ISO datetime | `soft` only; auto-resolve deadline |
 | `auto_resolved` | `boolean` | Set to `true` after AI auto-resolves a soft block |
 
+### Plan-linkage fields (set by `expand_plan_to_tasks`)
+
+| Field | Type | Notes |
+| --- | --- | --- |
+| `plan_id` | `uuid` | Id of the plan memory this task was expanded from |
+| `phase_id` | `string` | Phase id (e.g. `"phase-1"`) within the plan body |
+| `step_index` | `int >= 0` | Step ordinal within the phase |
+| `is_phase_gate` | `boolean` | `true` for synthetic phase quality-gate tasks |
+
+All four are present-or-absent together (mixing plan_id with no phase_id is rejected). When `is_phase_gate: true`, the task **must** have `blocking: "hard"` and start in `awaiting_human`. Phase-gate tasks transition to `done` only via human ack; the work-loop reads them as the halt signal between phases.
+
+See [`cairnlog:plan`](../plan/SKILL.md) for the full plan → expand flow.
+
 ### Schema invariants
 
 - `status: awaiting_human` requires both `question` AND `blocking`.
 - `blocking: soft` requires `wait_until`.
 - `blocking: hard` or `blocking: none` rejects `wait_until`.
+- `is_phase_gate: true` requires `plan_id` + `phase_id`, `blocking: "hard"`, and `status` in `{awaiting_human, done}`.
+- `plan_id`, `phase_id`, `step_index` must all be set together (or all absent).
 - `awaiting_human` + `blocking: none` is non-blocking and remains actionable.
 - `auto_resolved: true` requires `status !== awaiting_human`.
 

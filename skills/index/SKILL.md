@@ -22,6 +22,8 @@ The **`cairnlog` CLI** is the primary interface. MCP tools are an optional laten
 | [`cairnlog:gate`](../gate/SKILL.md) | Creating/listing/deleting `gate` rules; browsing `pattern` memories; promoting patterns to gates. |
 | [`cairnlog:chat`](../chat/SKILL.md) | Channel-style messaging with sub-agents or humans (`chat` memory type, channels and DMs). |
 | [`cairnlog:task`](../task/SKILL.md) | Task-tagged memories: frontmatter schema, listing/next/reorder, async ask/answer, blocking modes. |
+| [`cairnlog:discover`](../discover/SKILL.md) | Record findings/open-questions/assumptions while exploring a problem, before composing a plan. |
+| [`cairnlog:plan`](../plan/SKILL.md) | Compose, approve, and expand structured plans (overview / phases / steps) into work-loop tasks. |
 | [`cairnlog:cli`](../cli/SKILL.md) | Full CLI cheat sheet — auth, orgs/projects, doctor, every subcommand. Reference-only; load when you need an exhaustive flag list. |
 | [`cairnlog:work-loop`](../work-loop/SKILL.md) | Run an autonomous task loop via `/cairnlog:work-loop`. Driven by sentinel tokens and a Stop hook. |
 
@@ -76,3 +78,11 @@ Edits are optimistic-concurrency on `version`. On HTTP 409:
 3. On HTTP 422 (`no_match`) for `--find`/`--replace`, your pattern is gone from the new version
 
 Per-skill conflict-resolution playbooks live in `cairnlog:memorize` and `cairnlog:task`.
+
+## Plan lifecycle
+
+CairnLog supports the full discovery → plan → execution loop:
+
+1. **Discover** what the problem actually requires using `/cairnlog:discover` — record findings, open-questions, assumptions as `context` memories tagged `discovery/<uuid>`. See [`cairnlog:discover`](../discover/SKILL.md).
+2. **Plan** by composing an overview, phases (each with a quality gate), and atomic-commit steps. See [`cairnlog:plan`](../plan/SKILL.md). The `/cairnlog:plan-from-findings` slash command drafts a plan from accumulated discoveries.
+3. **Execute** by approving and expanding the plan into tasks, then running [`/cairnlog:work-loop`](../work-loop/SKILL.md). The loop pauses at each phase quality gate for human ack.
